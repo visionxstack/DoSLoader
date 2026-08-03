@@ -1,0 +1,11 @@
+name: Example Homepage Load Test
+target: http://localhost:8080/
+method: GET
+users: 100
+duration: 30s
+ramp_up: 5s
+think_time: 100ms
+timeout: 5s
+headers:
+  User-Agent: DoSLoaderAgent
+  Accept: text/html
