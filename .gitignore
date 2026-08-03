@@ -1,0 +1,11 @@
+# Binaries and executables
+dosloader
+bin/
+
+# Test binary outputs
+*.test
+*.out
+
+# Operating system files
+.DS_Store
+Thumbs.db
