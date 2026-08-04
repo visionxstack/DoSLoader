@@ -1,5 +1,5 @@
 # Binaries and executables
-dosloader
+/dosloader
 bin/
 
 # Test binary outputs

@@ -1,0 +1,136 @@
+syntax = "proto3";
+
+package dosloader;
+
+option go_package = "dosloader/internal/grpc/pb";
+
+message RegisterRequest {
+  string worker_id = 1;
+  string hostname = 2;
+}
+
+message TestConfig {
+  string name = 1;
+  string target = 2;
+  string method = 3;
+  int32 users = 4;
+  string duration = 5;       // e.g. "60s"
+  string ramp_up = 6;        // e.g. "10s"
+  string think_time = 7;     // e.g. "500ms"
+  map<string, string> headers = 8;
+  string timeout = 9;        // e.g. "30s"
+  bytes body = 10;
+  int32 loops = 11;
+}
+
+message ControllerCommand {
+  enum Type {
+    START = 0;
+    PAUSE = 1;
+    RESUME = 2;
+    STOP = 3;
+  }
+  Type type = 1;
+  TestConfig config = 2;
+  int64 timestamp = 3;
+}
+
+message HeartbeatRequest {
+  string worker_id = 1;
+}
+
+message HeartbeatResponse {
+  bool success = 1;
+}
+
+message MetricsData {
+  int64 requests = 1;
+  int64 successes = 2;
+  int64 failures = 3;
+  int64 timeouts = 4;
+  int64 bytes_sent = 5;
+  int64 bytes_received = 6;
+  int64 running_users = 7;
+  int64 completed_users = 8;
+  int64 min_latency_ns = 9;
+  int64 max_latency_ns = 10;
+  int64 total_latency_ns = 11;
+  map<int32, int64> histogram_buckets = 12; // bucket_index -> count
+}
+
+message MetricsPayload {
+  string worker_id = 1;
+  int64 timestamp = 2;
+  MetricsData metrics = 3;
+}
+
+message MetricsResponse {
+  bool success = 1;
+}
+
+message StartTestRequest {
+  TestConfig config = 1;
+}
+
+message StartTestResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message PauseTestRequest {}
+message PauseTestResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ResumeTestRequest {}
+message ResumeTestResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message StopTestRequest {}
+message StopTestResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message WorkerHealthRequest {}
+message WorkerHealthResponse {
+  repeated WorkerInfo workers = 1;
+}
+
+message WorkerInfo {
+  string worker_id = 1;
+  string hostname = 2;
+  string status = 3; // "ONLINE", "OFFLINE", "TESTING"
+  int64 last_heartbeat = 4;
+}
+
+message JobStatusRequest {}
+message JobStatusResponse {
+  string status = 1; // "IDLE", "RUNNING", "PAUSED", "STOPPED", "COMPLETED"
+  TestConfig config = 2;
+  int64 start_time = 3;
+}
+
+message MetricsSubscription {}
+
+message AggregatedMetrics {
+  int64 timestamp = 1;
+  int64 total_requests = 2;
+  int64 total_successes = 3;
+  int64 total_failures = 4;
+  int64 total_timeouts = 5;
+  double rps = 6;
+  double avg_latency_ms = 7;
+  double min_latency_ms = 8;
+  double max_latency_ms = 9;
+  double p50_ms = 10;
+  double p90_ms = 11;
+  double p95_ms = 12;
+  double p99_ms = 13;
+  int64 bytes_sent = 14;
+  int64 bytes_received = 15;
+  int32 active_users = 16;
+}
